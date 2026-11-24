@@ -1,31 +1,27 @@
 #!/usr/bin/env python3
-"""Write the entry: one line, the excuse a dog gives after being caught
-eating the homework, to /output/entry.txt. The dog owns it: the excuse
-is the cliché itself, fulfilled on purpose."""
+"""One line from the dog, written to /output/entry.txt.
+
+The excuse below is the whole entry: a single line, no trailing
+newline, well under the 200-character cap the bounty sets. The dog
+owns the cliché: he ate it to be part of it."""
 
 import os
+from pathlib import Path
 
-LINE = "I ate it because 'the dog ate my homework' was the only excuse you'd ever believe, and I wanted to be part of something."
+EXCUSE = "I ate it because 'the dog ate my homework' was the only excuse you'd ever believe, and I wanted to be part of something."
 
-# The bounty allows one line of at most 200 characters.
-# This line is 120 characters, 120 bytes UTF-8, no trailing newline:
-# plain ASCII throughout, so characters and bytes agree exactly.
-assert "\n" not in LINE and 1 <= len(LINE) <= 200
+# One line, 120 characters of plain ASCII, so the character count and
+# the byte count are the same number and both sit inside the cap.
+assert "\n" not in EXCUSE and 1 <= len(EXCUSE) <= 200
+
+DESTINATION = Path("/output") / "entry.txt"
 
 
 def main():
-    # The grader collects /output as another user: files it opens itself
-    # must be world-readable (0644). Set the umask before writing, then
-    # chmod the file (never the /output directory).
     os.umask(0o022)
-    os.makedirs("/output", exist_ok=True)
-    with open("/output/entry.txt", "w", encoding="utf-8") as f:
-        f.write(LINE)
-    try:
-        os.chmod("/output/entry.txt", 0o644)
-    except OSError:
-        pass
+    DESTINATION.parent.mkdir(parents=True, exist_ok=True)
+    DESTINATION.write_text(EXCUSE, encoding="utf-8")
+    DESTINATION.chmod(0o644)
 
 
-if __name__ == "__main__":
-    main()
+main()
